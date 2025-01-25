@@ -1,3 +1,3 @@
 git add .
-git commit -m "updating sets"
+git commit -m "intersection"
 git push -u origin main
