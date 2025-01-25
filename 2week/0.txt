@@ -1,3 +1,3 @@
 git add .
-git commit -m "intersection"
+git commit -m "difference: p.s. дискретка везде"
 git push -u origin main
