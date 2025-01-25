@@ -1,3 +1,3 @@
 thislist = ["apple", "banana", "cherry"]
 del thislist[0]
-print(thislist)
+print(thislist) #delete item by index
