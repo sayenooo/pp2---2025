@@ -13,5 +13,5 @@ myfamily = {
   }
 }
 
-print(myfamily["child2"]["name"])
+print(myfamily["child2"]["name"]) #updated
 
