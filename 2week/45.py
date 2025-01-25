@@ -17,5 +17,5 @@ for x in thisdict.values():
   print(end="\n")
 
 for x, y in thisdict.items():
-  print(x," " y) #both
+  print(x," ", y) #both
 
