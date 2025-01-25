@@ -1,3 +1,3 @@
 git add .
-git commit -m "unpack tuples part2"
+git commit -m "loop tuples"
 git push -u origin main
