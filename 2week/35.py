@@ -1,9 +1,9 @@
 
-set111 = {"a", "b", "c"}
-set222 = {1, 2, 3}
-set333 = {"John", "Elena"}
-set444 = {"apple", "bananas", "cherry"}
-myset = set111.union(set222, set333, set444)
+set11 = {"a", "b", "c"}
+set22 = {1, 2, 3}
+set33 = {"John", "Elena"}
+set44 = {"apple", "bananas", "cherry"}
+myset = set11.union(set22, set33, set44)
 print(myset)
 
 print(end="\n")
