@@ -11,3 +11,10 @@ bb=list(aa)
 bb.append('d')
 aa=bb
 print(bb)
+
+print(end="\n")
+
+aaa=('a','b','c')
+bbb=('d')
+aaa+=bbb
+print(aaa)
