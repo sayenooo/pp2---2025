@@ -15,6 +15,6 @@ print(bb)
 print(end="\n")
 
 aaa=('a','b','c')
-bbb=('d')
+bbb=('d',)
 aaa+=bbb
 print(aaa)
