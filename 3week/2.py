@@ -8,4 +8,4 @@ class Square(Shape):
         return self.length**2
 
 Area=Square(int(input()))
-print(Area.area)
+print(Area.area())
