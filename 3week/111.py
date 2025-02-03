@@ -1,8 +1,8 @@
-def is_palindrom(s):
+def is_palindrome(s):
     return s[::-1]
     
 s=input()
-if is_palindrom(s)==s:
+if is_palindrome(s)==s:
     print("YES")
 else:
     print("NO")
