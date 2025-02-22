@@ -25,7 +25,7 @@ for FCheckpattern in fciteration:
 
 print("creating a table")
 
-ItemPattern = r"(?P<ItemRowNumber>.*)\n(?P<ItemName>.*)\n(?P<ItemPrice1>.*)\n(?P<ItemPrice2>.*)\n(?P<ItemTotalPrice>.*)"
+ItemPattern = r"(?P<ItemRowNumber>.*)\n(?P<ItemName>.*)\n(?P<ItemPrice1>.*)\sx\s(?P<ItemPrice2>.*)\n(?P<ItemTotalPrice>.*)"
 
 prog = re.compile(ItemPattern)
 Itemiterator = prog.finditer(text)
