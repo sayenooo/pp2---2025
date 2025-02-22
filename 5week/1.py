@@ -1,6 +1,7 @@
 import re
 
-s = "He1llo, abmy na0me is Zhansaya 0a ab as0 asljkn"
-pattern = r"a*b*"
-ss = re.findall(pattern,s)
-print(ss)
+s = "her weh fw uwihuw ab ab abb aabd abb diuqh"
+pattern = r"ab*" 
+a = re.findall(pattern,s)
+
+print(a)
