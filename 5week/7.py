@@ -1,6 +1,6 @@
 import re
 
-s = "this_is_a_snake_case_string"
+s = "this_is_a_snake_case_string_jerk"
 matches = re.finditer(r'_([a-z])', s)
 
 for match in matches:

@@ -1,7 +1,6 @@
 import re
 
 s = "ijijJIOJIjlIijiIklm"
-pattern = r"[A-Z]"
-a = s.split(pattern)
+pattern = re.split(r"(?=[A-Z]\w*)",s)
+print(pattern)
 
-print(a)
