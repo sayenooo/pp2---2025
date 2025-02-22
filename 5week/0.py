@@ -32,6 +32,6 @@ Itemiterator = prog.finditer(text)
 
 with open("data.csv","w",newline="",encoding="utf8") as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(["ItemRowNumber","ItemName"])
+    writer.writerow(["ItemRowNumber","ItemName","ItemPrice1","ItemPrice2","ItemTotalPrice"])
     for ItemResult in Itemiterator:
         writer.writerow([ItemResult.group("ItemRowNumber"),ItemResult.group("ItemName"),ItemResult.group("ItemPrice1"),ItemResult.group("ItemPrice2"),ItemResult.group("ItemTotalPrice")])
