@@ -11,6 +11,37 @@
 Примечание: Для полного функционирования замените пути к файлам изображений и звуков на существующие файлы.
 """
 
+"""
+
+DEFAULT MY VERSION 
+
+import pygame
+
+pygame.init()
+
+#game window
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 800
+
+screen = pygame.display.set_mode(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+#game loop
+run = True
+while run:
+
+#event handler   
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT():
+            run = False
+            
+pygame.quit()
+
+"""
+
+
+
+
+
 import pygame
 import sys
 
