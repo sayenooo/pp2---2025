@@ -1,5 +1,3 @@
-
-
 class Shape:
     def area(self):
         return 0
@@ -18,7 +16,9 @@ class Square(Shape):
 
 Area1=Square(int(input()))
 print(Area1.area())
+
 length,width=map(int,input().split())
+
 Area2=Rectangle(length,width)
 print(Area2.area())
 

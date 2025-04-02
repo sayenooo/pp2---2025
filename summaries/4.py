@@ -152,6 +152,15 @@ def json_demo():
     print(parsed_data)
     print()
 
+"""
+json.dumps(obj)	Преобразует Python-объект в JSON-строку
+json.dump(obj, file)	Записывает JSON в файл
+json.loads(json_str)	Преобразует JSON-строку в Python-объект
+json.load(file)	Читает JSON из файла
+uppercase reverse slash
+"""
+
+
 
 # ===============================
 # Основной блок выполнения
