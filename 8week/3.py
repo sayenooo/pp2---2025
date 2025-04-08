@@ -1,49 +1,52 @@
+# Импорт необходимых библиотек
 import pygame
 import random
 from pygame.math import Vector2
 import time
 
-# Initialize pygame
+# Инициализация pygame
 pygame.init()
 
-# Set screen dimensions
+# Размеры экрана
 WIDTH = 800
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+# Настройка FPS и таймера
 clock = pygame.time.Clock()
 FPS = 60
 running = True
 
-LMBpressed = False  # Left mouse button pressed
-shift_pressed = False  # Shift key pressed
-ctrl_pressed = False  # Control key pressed
-eraser_mode = False  # Eraser mode active
+# Флаги для состояния ввода
+LMBpressed = False         # Левая кнопка мыши нажата
+shift_pressed = False      # Нажата клавиша Shift (для рисования прямоугольника)
+ctrl_pressed = False       # Нажата клавиша Ctrl (для рисования круга)
+eraser_mode = False        # Активирован режим ластика
 
-# Drawing settings
+# Толщина кисти и ластика
 THICKNESS = 5
 ERASER_THICKNESS = 15
 
-# Previous mouse position for drawing lines
+# Предыдущие координаты мыши
 prevX = None
 prevY = None
 
-# Start and end positions for drawing shapes
+# Начальные и конечные координаты фигуры (для прямоугольников и кругов)
 start_pos = None
 end_pos = None
 
+# Цвет по умолчанию
+color = "red"
 
-color = "red" #default drawing color
-
-# List to store drawn shapes
+# Список нарисованных фигур
 drawn_shapes = []
 
-# Function to draw a rectangle
+# Функция для рисования прямоугольника
 def draw_rect(x1, y1, x2, y2, color, thickness):
     rect = pygame.Rect(min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1))
     pygame.draw.rect(screen, color, rect, thickness) 
 
-# Function to draw a circle
+# Функция для рисования круга
 def draw_circle(x1, y1, x2, y2, color, thickness):
     center_x = (x1 + x2) // 2
     center_y = (y1 + y2) // 2
@@ -51,11 +54,12 @@ def draw_circle(x1, y1, x2, y2, color, thickness):
     pygame.draw.circle(screen, color, (center_x, center_y), radius, thickness)
 
 
+# Основной цикл приложения
 while running:
-    # Fill the screen with black to refresh the drawing
+    # Очистка экрана
     screen.fill("black")
 
-    # Redraw all saved shapes
+    # Отрисовка всех сохранённых фигур
     for shape in drawn_shapes:
         shape_type, *params = shape
 
@@ -68,85 +72,97 @@ while running:
         elif shape_type == "eraser":
             pygame.draw.line(screen, *params)
 
+    # Обработка событий
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # Mouse button press event
+        # Нажата ЛКМ
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             LMBpressed = True
-            # Store start position for shapes
-            prevX = event.pos[0]
-            prevY = event.pos[1]
+            prevX, prevY = event.pos
             start_pos = event.pos
             
-        # Mouse movement event
+        # Движение мыши
         if event.type == pygame.MOUSEMOTION:
             if LMBpressed:
                 end_pos = event.pos
 
-                # Drawing freehand lines
+                # Свободное рисование линий
                 if not shift_pressed and not ctrl_pressed and prevX is not None and not eraser_mode:
                     drawn_shapes.append(("line", color, (prevX, prevY), event.pos, THICKNESS))
-                    prevX = event.pos[0]
-                    prevY = event.pos[1]
-               # Eraser mode 
+                    prevX, prevY = event.pos
+                # Режим ластика
                 if eraser_mode and prevX is not None:
                     drawn_shapes.append(("eraser", "black", (prevX, prevY), event.pos, ERASER_THICKNESS))
-                    prevX = event.pos[0]
-                    prevY = event.pos[1]
+                    prevX, prevY = event.pos
 
-        # Mouse button release event
+        # Отпускание ЛКМ — завершение рисования фигуры
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             LMBpressed = False
 
-            #Save and drawing rectangles when Shift is pressed
+            # Сохранение прямоугольника
             if shift_pressed and start_pos and end_pos:
                 drawn_shapes.append(("rect", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))
-            #Save and drawing circles when Ctrl is pressed
+            # Сохранение круга
             if ctrl_pressed and start_pos and end_pos:
                 drawn_shapes.append(("circle", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))
 
             start_pos = None
             end_pos = None
 
-
+        # Обработка нажатий клавиш
         if event.type == pygame.KEYDOWN: 
-            if event.key == pygame.K_EQUALS:
-                THICKNESS += 1  # Increase thickness
-            if event.key == pygame.K_MINUS:
-                THICKNESS = max(1, THICKNESS - 1)  # Deccrease thickness, can't be less than 1
-            #changing the color
+            if event.key == pygame.K_EQUALS:         # Увеличить толщину кисти
+                THICKNESS += 1
+            if event.key == pygame.K_MINUS:          # Уменьшить толщину кисти
+                THICKNESS = max(1, THICKNESS - 1)
+
+            # Смена цвета
             if event.key == pygame.K_r:
                 color = "red"
             if event.key == pygame.K_g:
                 color = "green"
             if event.key == pygame.K_b:
                 color = "blue"
-            if event.key == pygame.K_LSHIFT: # rectangle drawing mode
+
+            # Включение режимов
+            if event.key == pygame.K_LSHIFT:
                 shift_pressed = True
-            if event.key == pygame.K_LCTRL: # circle drawing mode
+            if event.key == pygame.K_LCTRL:
                 ctrl_pressed = True
-            if event.key == pygame.K_e: # eraser mode
+            if event.key == pygame.K_e:
                 eraser_mode = True
-            if event.key == pygame.K_q: # disable eraser mode
+            if event.key == pygame.K_q:
                 eraser_mode = False
-            if event.key == pygame.K_c: # clear the screen
+            if event.key == pygame.K_c:  # Очистить экран
                 drawn_shapes.clear()
         
-        # Key release events
+        # Отпускание клавиш
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LSHIFT:
                 shift_pressed = False
             if event.key == pygame.K_LCTRL:
                 ctrl_pressed = False
             
-    # Preview shapes while drawing
-    # Not saving them
+    # Предпросмотр фигуры при рисовании (не сохраняется до отпускания мыши)
     if shift_pressed and LMBpressed and start_pos and end_pos:
         draw_rect(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
     if ctrl_pressed and LMBpressed and start_pos and end_pos:
         draw_circle(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
 
+    # Обновление экрана
     pygame.display.flip()
     clock.tick(FPS)
+
+
+''''
+Клавиша	Действие
+R / G / B	Цвет: красный / зелёный / синий
+Shift	Режим прямоугольников
+Ctrl	Режим кругов
+E	Ластик
+Q	Выключить ластик
+C	Очистить экран
+= / -	Изменение толщины линии
+'''

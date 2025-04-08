@@ -1,98 +1,84 @@
 import pygame
 import random
 from pygame.math import Vector2
-from math import*
+from math import *
 import time
 
-# Initialize pygame
+# Инициализация Pygame
 pygame.init()
 
-# Set screen dimensions
-WIDTH = 800
-HEIGHT = 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# Параметры окна
+WIDTH, HEIGHT = 800, 600  # Размеры окна
+screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Создание экрана с заданными размерами
+pygame.display.set_caption("Рисовалка")  # Заголовок окна
 
-clock = pygame.time.Clock()
-FPS = 60
-running = True
+# Основные параметры
+clock = pygame.time.Clock()  # Часы для управления частотой кадров
+FPS = 60  # Частота кадров в секунду
+running = True  # Флаг работы главного цикла
 
-LMBpressed = False  # Left mouse button pressed
-lshift_pressed = False  # left Shift key pressed
-rshift_pressed = False  # right Shift key pressed
-lctrl_pressed = False  # left Control key pressed
-rctrl_pressed = False
-lalt_pressed = False  # left Alt key pressed
-ralt_pressed = False# right Alt key pressed
-eraser_mode = False  # Eraser mode active
+# Состояния клавиш и мыши
+LMBpressed = False  # Переменная, указывающая на то, что левая кнопка мыши нажата
+lshift_pressed = rshift_pressed = False  # Состояния клавиш Shift (левая и правая)
+lctrl_pressed = rctrl_pressed = False  # Состояния клавиш Ctrl (левая и правая)
+lalt_pressed = ralt_pressed = False  # Состояния клавиш Alt (левая и правая)
+eraser_mode = False  # Флаг, показывающий, активирован ли режим стирания
 
-# Drawing settings
-THICKNESS = 5
-ERASER_THICKNESS = 15
+# Толщина линий и стирания
+THICKNESS = 5  # Толщина линий по умолчанию
+ERASER_THICKNESS = 15  # Толщина стирания
 
-# Previous mouse position for drawing lines
-prevX = None
-prevY = None
+# Цвет по умолчанию
+color = "red"  # Начальный цвет для рисования (красный)
 
-# Start and end positions for drawing shapes
-start_pos = None
-end_pos = None
+# Предыдущая позиция мыши и начальная точка фигуры
+prevX = prevY = None  # Для рисования линии по предыдущей точке
+start_pos = end_pos = None  # Начальная и конечная точка для рисования фигур
 
-
-color = "red" #default drawing color
-
-# List to store drawn shapes
+# Список всех нарисованных объектов, чтобы их можно было отрисовать после очистки экрана
 drawn_shapes = []
 
-#rectangle lshift
+# ----------- Функции рисования фигур -----------
 def rect(x1, y1, x2, y2, color, thickness):
-    rect = pygame.Rect(min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1))
-    pygame.draw.rect(screen, color, rect, thickness) 
+    """Рисует прямоугольник"""
+    pygame.draw.rect(screen, color, pygame.Rect(min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1)), thickness)
 
-#circle lctrl
 def circle(x1, y1, x2, y2, color, thickness):
-    center_x = (x1 + x2) // 2
-    center_y = (y1 + y2) // 2
-    radius = max(abs(x2 - x1), abs(y2 - y1)) // 2
-    pygame.draw.circle(screen, color, (center_x, center_y), radius, thickness)
-    
-#square   lalt
+    """Рисует круг"""
+    cx = (x1 + x2) // 2  # Центр по оси X
+    cy = (y1 + y2) // 2  # Центр по оси Y
+    radius = max(abs(x2 - x1), abs(y2 - y1)) // 2  # Радиус круга
+    pygame.draw.circle(screen, color, (cx, cy), radius, thickness)
+
 def square(x1, y1, x2, y2, color, thickness):
-    square = pygame.Rect(min(x1, x2), min(y1, y2), abs(x2 - x1), abs(x2 - x1))
-    pygame.draw.rect(screen, color, square, thickness) 
-    
-#right t ralt 
+    """Рисует квадрат (по сути, прямоугольник с одинаковыми сторонами)"""
+    side = abs(x2 - x1)  # Сторона квадрата
+    pygame.draw.rect(screen, color, pygame.Rect(min(x1, x2), min(y1, y2), side, side), thickness)
+
 def right(x1, y1, x2, y2, color, thickness):
-    side_length = abs(x2 - x1)  # Длина стороны треугольника
-    height = (sqrt(3) / 2) * side_length 
-    pygame.draw.polygon(screen, color, [[(x1+x2)//2, y1], [x1, y1 + height], [x2, y2 + height]], thickness)
+    """Рисует равносторонний треугольник"""
+    side = abs(x2 - x1)  # Длина стороны треугольника
+    height = int((sqrt(3) / 2) * side)  # Высота треугольника (по формуле для равностороннего)
+    pygame.draw.polygon(screen, color, [[(x1 + x2) // 2, y1], [x1, y1 + height], [x2, y1 + height]], thickness)
 
-#equip t  rshift
 def equip(x1, y1, x2, y2, color, thickness):
-    pygame.draw.polygon(screen, color, [[x1, y2], [x2, y2], [(x1+x2)//2, y1]], thickness)
+    """Рисует треугольник (по форме похож на "щит")"""
+    pygame.draw.polygon(screen, color, [[x1, y2], [x2, y2], [(x1 + x2) // 2, y1]], thickness)
 
-#rhombus rshift    
 def rhombus(x1, y1, x2, y2, color, thickness):
-    center_x = (x1 + x2) // 2
-    center_y = (y1 + y2) // 2
-    width = abs(x2 - x1) // 2
-    height = abs(y2 - y1) // 2
-    points = [
-        (center_x, y1),  # Верхняя точка
-        (x2, center_y),  # Правая точка
-        (center_x, y2),  # Нижняя точка
-        (x1, center_y)   # Левая точка
-    ]
+    """Рисует ромб"""
+    cx, cy = (x1 + x2) // 2, (y1 + y2) // 2  # Центр ромба
+    half_w, half_h = abs(x2 - x1) // 2, abs(y2 - y1) // 2  # Половина ширины и высоты ромба
+    points = [(cx, y1), (x2, cy), (cx, y2), (x1, cy)]  # Точки ромба
     pygame.draw.polygon(screen, color, points, thickness)
 
-
+# --------------- Главный цикл ---------------
 while running:
-    # Fill the screen with black to refresh the drawing
-    screen.fill("black")
+    screen.fill("black")  # Очистка экрана (черный фон)
 
-    # Redraw all saved shapes
+    # Перерисовываем все сохранённые фигуры
     for shape in drawn_shapes:
         shape_type, *params = shape
-
         if shape_type == "line":
             pygame.draw.line(screen, *params)
         elif shape_type == "rect":
@@ -102,130 +88,124 @@ while running:
         elif shape_type == "square":
             square(*params)
         elif shape_type == "rhombus":
-            square(*params)
+            rhombus(*params)
         elif shape_type == "right":
             right(*params)
         elif shape_type == "equip":
-            right(*params)
+            equip(*params)
         elif shape_type == "eraser":
             pygame.draw.line(screen, *params)
 
+    # Обработка событий
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            running = False  # Выход из цикла при закрытии окна
 
-        # Mouse button press event
+        # Нажатие мыши (левой кнопкой)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             LMBpressed = True
-            # Store start position for shapes
-            prevX = event.pos[0]
-            prevY = event.pos[1]
-            start_pos = event.pos
-            
-        # Mouse movement event
-        if event.type == pygame.MOUSEMOTION:
-            if LMBpressed:
-                end_pos = event.pos
+            prevX, prevY = event.pos  # Сохраняем начальную точку для рисования
+            start_pos = event.pos  # Начальная точка для фигур
 
-                # Drawing freehand lines
-                if not lshift_pressed and not lctrl_pressed and not rshift_pressed and not rctrl_pressed and prevX is not None and not eraser_mode:
+        # Движение мыши
+        if event.type == pygame.MOUSEMOTION and LMBpressed:
+            end_pos = event.pos  # Конечная точка движения мыши
+
+            # Если не активированы клавиши модификаторы для рисования фигур
+            if not any([lshift_pressed, lctrl_pressed, rshift_pressed, rctrl_pressed, lalt_pressed, ralt_pressed]):
+                if not eraser_mode:  # Рисуем линию, если не в режиме стирания
                     drawn_shapes.append(("line", color, (prevX, prevY), event.pos, THICKNESS))
-                    prevX = event.pos[0]
-                    prevY = event.pos[1]
-               # Eraser mode 
-                if eraser_mode and prevX is not None:
+                else:  # В режиме стирания рисуем линию с цветом "черный"
                     drawn_shapes.append(("eraser", "black", (prevX, prevY), event.pos, ERASER_THICKNESS))
-                    prevX = event.pos[0]
-                    prevY = event.pos[1]
+                prevX, prevY = event.pos  # Обновляем предыдущую позицию для рисования
 
-        # Mouse button release event
+        # Отпускание мыши
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             LMBpressed = False
+            if start_pos and end_pos:
+                x1, y1 = start_pos
+                x2, y2 = end_pos
 
-            #Save and drawing rectangles when Shift is pressed
-            if lshift_pressed and start_pos and end_pos:
-                drawn_shapes.append(("rect", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))
-            #Save and drawing circles when Ctrl is pressed
-            if lctrl_pressed and start_pos and end_pos:
-                drawn_shapes.append(("circle", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))   
-            #Save and drawing rectangles when Shift is pressed
-            if lalt_pressed and start_pos and end_pos:
-                drawn_shapes.append(("square", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))
-                
-            #Save and drawing rectangles when Shift is pressed
-            if rshift_pressed and start_pos and end_pos:
-                drawn_shapes.append(("right", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))
-            #Save and drawing circles when Ctrl is pressed
-            if rctrl_pressed and start_pos and end_pos:
-                drawn_shapes.append(("rhombus", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))
-            #Save and drawing circles when Ctrl is pressed
-            if ralt_pressed and start_pos and end_pos:
-                drawn_shapes.append(("equip", start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS))    
-                
-            start_pos = None
-            end_pos = None
+                # Сохраняем нарисованные фигуры
+                if lshift_pressed:
+                    drawn_shapes.append(("rect", x1, y1, x2, y2, color, THICKNESS))
+                elif lctrl_pressed:
+                    drawn_shapes.append(("circle", x1, y1, x2, y2, color, THICKNESS))
+                elif lalt_pressed:
+                    drawn_shapes.append(("square", x1, y1, x2, y2, color, THICKNESS))
+                elif rshift_pressed:
+                    drawn_shapes.append(("right", x1, y1, x2, y2, color, THICKNESS))
+                elif rctrl_pressed:
+                    drawn_shapes.append(("rhombus", x1, y1, x2, y2, color, THICKNESS))
+                elif ralt_pressed:
+                    drawn_shapes.append(("equip", x1, y1, x2, y2, color, THICKNESS))
+            start_pos = end_pos = None  # Сброс начальной и конечной точки
 
-
-        if event.type == pygame.KEYDOWN: 
+        # Нажатие клавиш
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_EQUALS:
-                THICKNESS += 1  # Increase thickness
-            if event.key == pygame.K_MINUS:
-                THICKNESS = max(1, THICKNESS - 1)  # Deccrease thickness, can't be less than 1
-            #changing the color
-            if event.key == pygame.K_r:
-                color = "red"
-            if event.key == pygame.K_g:
-                color = "green"
-            if event.key == pygame.K_b:
-                color = "blue"
-            if event.key == pygame.K_LSHIFT: # rectangle drawing mode
-                lshift_pressed = True
-            if event.key == pygame.K_LCTRL: # circle drawing mode
-                lctrl_pressed = True
-            if event.key == pygame.K_LALT: # square drawing mode
-                lalt_pressed = True
-            if event.key == pygame.K_RSHIFT: # equip drawing mode
-                rshift_pressed = True
-            if event.key == pygame.K_RCTRL: # rhombus drawing mode
-                rctrl_pressed = True
-            if event.key == pygame.K_RALT: # right drawing mode
-                ralt_pressed = True
-            if event.key == pygame.K_e: # eraser mode
-                eraser_mode = True
-            if event.key == pygame.K_q: # disable eraser mode
-                eraser_mode = False
-            if event.key == pygame.K_c: # clear the screen
-                drawn_shapes.clear()
-        
-        # Key release events
+                THICKNESS += 1  # Увеличиваем толщину линий
+            elif event.key == pygame.K_MINUS:
+                THICKNESS = max(1, THICKNESS - 1)  # Уменьшаем толщину, не ниже 1
+            elif event.key == pygame.K_r:
+                color = "red"  # Выбираем красный цвет
+            elif event.key == pygame.K_g:
+                color = "green"  # Выбираем зеленый цвет
+            elif event.key == pygame.K_b:
+                color = "blue"  # Выбираем синий цвет
+            elif event.key == pygame.K_e:
+                eraser_mode = True  # Включаем режим стирания
+            elif event.key == pygame.K_q:
+                eraser_mode = False  # Выключаем режим стирания
+            elif event.key == pygame.K_c:
+                drawn_shapes.clear()  # Очищаем все нарисованные фигуры
+            elif event.key == pygame.K_LSHIFT:
+                lshift_pressed = True  # Включаем режим рисования прямоугольников
+            elif event.key == pygame.K_LCTRL:
+                lctrl_pressed = True  # Включаем режим рисования кругов
+            elif event.key == pygame.K_LALT:
+                lalt_pressed = True  # Включаем режим рисования квадратов
+            elif event.key == pygame.K_RSHIFT:
+                rshift_pressed = True  # Включаем режим рисования треугольников
+            elif event.key == pygame.K_RCTRL:
+                rctrl_pressed = True  # Включаем режим рисования ромбов
+            elif event.key == pygame.K_RALT:
+                ralt_pressed = True  # Включаем режим рисования "щита"
+
+        # Отпускание клавиш
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LSHIFT:
                 lshift_pressed = False
-            if event.key == pygame.K_LCTRL:
+            elif event.key == pygame.K_LCTRL:
                 lctrl_pressed = False
-            if event.key == pygame.K_RSHIFT:
-                rshift_pressed = False
-            if event.key == pygame.K_RCTRL:
-                rctrl_pressed = False
-            if event.key == pygame.K_LALT:
+            elif event.key == pygame.K_LALT:
                 lalt_pressed = False
-            if event.key == pygame.K_RALT:
+            elif event.key == pygame.K_RSHIFT:
+                rshift_pressed = False
+            elif event.key == pygame.K_RCTRL:
+                rctrl_pressed = False
+            elif event.key == pygame.K_RALT:
                 ralt_pressed = False
-            
-    # Preview shapes while drawing
-    # Not saving them
-    if lshift_pressed and LMBpressed and start_pos and end_pos:
-        rect(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
-    if lctrl_pressed and LMBpressed and start_pos and end_pos:
-        circle(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
-    if rshift_pressed and LMBpressed and start_pos and end_pos:
-        right(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
-    if rctrl_pressed and LMBpressed and start_pos and end_pos:
-        rhombus(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
-    if lalt_pressed and LMBpressed and start_pos and end_pos:
-        square(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
-    if ralt_pressed and LMBpressed and start_pos and end_pos:
-        equip(start_pos[0], start_pos[1], end_pos[0], end_pos[1], color, THICKNESS)
 
-    pygame.display.flip()
-    clock.tick(FPS)
+    # Предпросмотр фигуры (визуализация до отпускания мыши)
+    if LMBpressed and start_pos and end_pos:
+        x1, y1 = start_pos
+        x2, y2 = end_pos
+        # Рисуем предварительный вид фигуры в процессе её рисования
+        if lshift_pressed:
+            rect(x1, y1, x2, y2, color, THICKNESS)
+        elif lctrl_pressed:
+            circle(x1, y1, x2, y2, color, THICKNESS)
+        elif lalt_pressed:
+            square(x1, y1, x2, y2, color, THICKNESS)
+        elif rshift_pressed:
+            right(x1, y1, x2, y2, color, THICKNESS)
+        elif rctrl_pressed:
+            rhombus(x1, y1, x2, y2, color, THICKNESS)
+        elif ralt_pressed:
+            equip(x1, y1, x2, y2, color, THICKNESS)
+
+    pygame.display.flip()  # Обновление экрана
+    clock.tick(FPS)  # Поддержание частоты кадров
+
+pygame.quit()  # Завершаем работу Pygame

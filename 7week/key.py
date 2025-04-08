@@ -1,40 +1,66 @@
+# Импортируем библиотеку pygame
 import pygame
 
+# Инициализируем все модули pygame
 pygame.init()
 
+# ---------------- НАСТРОЙКИ ЭКРАНА ----------------
+
+# Указываем ширину и высоту окна
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 
+# Создаём игровое окно с заданными размерами
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+# Создаём объект clock для ограничения FPS (кадров в секунду)
 clock = pygame.time.Clock()
 
+# ---------------- ПЕРЕМЕННЫЕ ИГРОКА ----------------
+
+# Начальные координаты игрока
 x = 30
 y = 30
+
+# Создаём прямоугольник игрока: координаты (x, y), размер 10x10
 player = pygame.Rect(x, y, 10, 10)
+
+# ---------------- ОСНОВНОЙ ЦИКЛ ИГРЫ ----------------
 
 run = True
 while run:
+    # Заливаем экран чёрным цветом перед отрисовкой нового кадра
     screen.fill((0, 0, 0))
 
+    # Проверяем все события (например, нажатие клавиш, закрытие окна)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False  
+            run = False  # Если пользователь нажал на крестик — закрываем игру
 
+    # Получаем список всех нажатых клавиш
     key = pygame.key.get_pressed()
-    if key[pygame.K_UP]: 
+    
+    # Двигаем игрока в зависимости от нажатых клавиш
+    if key[pygame.K_UP]:       # Стрелка вверх
         y -= 5
-    if key[pygame.K_DOWN]: 
+    if key[pygame.K_DOWN]:     # Стрелка вниз
         y += 5                          
-    if key[pygame.K_LEFT]: 
+    if key[pygame.K_LEFT]:     # Стрелка влево
         x -= 5  
-    if key[pygame.K_RIGHT]: 
+    if key[pygame.K_RIGHT]:    # Стрелка вправо
         x += 5  
 
+    # Обновляем позицию прямоугольника игрока
     player.topleft = (x, y)
+
+    # Ограничиваем частоту кадров до 60 FPS
     clock.tick(60)
 
+    # Отрисовываем игрока (зелёный прямоугольник)
     pygame.draw.rect(screen, (32, 234, 45), player)
+
+    # Обновляем экран (показываем всё нарисованное)
     pygame.display.update()
 
+# После выхода из игрового цикла — закрываем pygame
 pygame.quit()
