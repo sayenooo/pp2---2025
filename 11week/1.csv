@@ -1,0 +1,21 @@
+name,surename,identity,phone,job,salary,email
+Alice,Walker,f,77012345678,Data Scientist,130000,alice.walker@gmail.com
+Bob,Smith,m,77023456789,Backend Developer,125000,bob.smith@kbtu.kz
+Clara,Johnson,f,77034567890,UI Designer,110000,clara.johnson@mail.ru
+David,Brown,m,77045678901,DevOps Engineer,140000,david.brown@outlook.com
+Eva,Jones,f,77056789012,ML Engineer,135000,eva.jones@kbtu.kz
+Frank,Miller,m,77067890123,System Analyst,120000,frank.miller@gmail.com
+Grace,Davis,f,77078901234,QA Engineer,115000,grace.davis@yandex.ru
+Harry,Garcia,m,77089012345,Fullstack Developer,145000,harry.garcia@mail.ru
+Isla,Martinez,f,77090123456,Product Manager,150000,isla.martinez@kbtu.kz
+Jack,Rodriguez,m,77011223344,Software Engineer,128000,jack.rodriguez@yahoo.com
+Kate,Lewis,f,77022334455,Data Engineer,133000,kate.lewis@gmail.com
+Liam,Lee,m,77033445566,Security Analyst,127000,liam.lee@kbtu.kz
+Mia,Walker,f,77044556677,IT Consultant,122000,mia.walker@mail.ru
+Noah,Hall,m,77055667788,Network Engineer,118000,noah.hall@protonmail.com
+Olivia,Allen,f,77066778899,Technical Writer,108000,olivia.allen@kbtu.kz
+Paul,Young,m,77077889900,Database Admin,132000,paul.young@gmail.com
+Quinn,Hernandez,f,77088990011,AI Researcher,160000,quinn.hernandez@mail.ru
+Ryan,King,m,77099001122,Cloud Architect,155000,ryan.king@kbtu.kz
+Sophie,Wright,f,77010111213,Mobile Developer,138000,sophie.wright@yahoo.com
+Tom,Scott,m,77021222334,Blockchain Developer,170000,tom.scott@kbtu.kz

@@ -1,8 +1,16 @@
 import sqlite3
 import csv
+import psycopg2
 
 # Connection
-conn = sqlite3.connect("phonebook.db")
+conn = psycopg2.connect(
+    dbname='postgres',     # подключаемся к существующей БД (обычно 'postgres')
+    user='postgres',       # пользователь
+    password='Loving007',  # замените на ваш пароль
+    host='localhost',      # или IP сервера
+    port='5433'            # стандартный порт
+)
+
 cursor = conn.cursor()
 
 # Create table
