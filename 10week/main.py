@@ -42,7 +42,7 @@ def add(cursor,conn):
             phone = input()
             check1 = re.search(pattern1, phone)
             if not check1:
-                print("pls, type a valid form 12 digits, starting from 77")
+                print("pls, type a valid form 11 digits, starting from 77")
                 
     print("job:")
     job = input()
@@ -97,7 +97,7 @@ def add_m(cursor,conn):
                 phone = input()
                 check1 = re.search(pattern1, phone)
                 if not check1:
-                    print("pls, type a valid form 12 digits, starting from 77")
+                    print("pls, type a valid form 11 digits, starting from 77")
         print("job:")
         job = input()
         print("salary:")
